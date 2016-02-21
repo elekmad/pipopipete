@@ -217,40 +217,53 @@ int main( int argc, char *argv[ ] )
                     }
                 case SDL_MOUSEMOTION:
                 {
-                    unsigned int case_x, case_y;
-                    printf("%d [%d] %d [%d]\n", event.motion.x, event.motion.xrel, event.motion.y, event.motion.yrel);
+                    unsigned int case_x, case_y, motion_x, motion_y;
                     case_x = event.motion.x % TILE_X_SIZE;
                     case_y = event.motion.y % TILE_Y_SIZE;
+                    motion_x = event.motion.x / TILE_X_SIZE;
+                    motion_y = event.motion.y / TILE_Y_SIZE;
+                    printf("%d [%d] %d [%d] => %d/%d ([%d/%d] / [%d/%d] )\n", event.motion.x, event.motion.xrel, event.motion.y, event.motion.yrel, case_x, case_y, motion_x, motion_y, SCREEN_X_SIZE, SCREEN_Y_SIZE);
 
+                    if(motion_x < 0 || motion_x > SCREEN_X_SIZE)
+                        break;
+                    if(motion_y < 0 || motion_y > SCREEN_Y_SIZE)
+                        break;
                     if(current_line_x >= 0 && current_line_y >= 0)
                         draw_line(current_line_x, current_line_y);
                     if(current_column_x >= 0 && current_column_y >= 0)
                         draw_column(current_column_x, current_column_y);
-                    if(case_x < TILE_BOUND_SIZE && (case_y >= TILE_BOUND_SIZE && case_y < TILE_Y_SIZE - TILE_BOUND_SIZE))//left column
+                    if(motion_y < SCREEN_Y_SIZE && case_x < TILE_BOUND_SIZE && (case_y >= TILE_BOUND_SIZE && case_y < TILE_Y_SIZE - TILE_BOUND_SIZE))//left column
                     {
-                        current_column_x = event.motion.x / TILE_X_SIZE;
-                        current_column_y = event.motion.y / TILE_Y_SIZE;
+                        current_column_x = motion_x;
+                        current_column_y = motion_y;
                         current_line_x = -1;
                         current_line_y = -1;
                     }
-                    else if(case_x > TILE_X_SIZE - TILE_BOUND_SIZE && (case_y >= TILE_BOUND_SIZE && case_y < TILE_Y_SIZE - TILE_BOUND_SIZE))//right column
+                    else if(motion_y < SCREEN_Y_SIZE && case_x > TILE_X_SIZE - TILE_BOUND_SIZE && (case_y >= TILE_BOUND_SIZE && case_y < TILE_Y_SIZE - TILE_BOUND_SIZE))//right column
                     {
-                        current_column_x = (event.motion.x / TILE_X_SIZE) + 1;
-                        current_column_y = event.motion.y / TILE_Y_SIZE;
+                        current_column_x = motion_x + 1;
+                        current_column_y = motion_y;
                         current_line_x = -1;
                         current_line_y = -1;
                     }
-                    else if(case_y > TILE_Y_SIZE - TILE_BOUND_SIZE && (case_x >= TILE_BOUND_SIZE && case_x < TILE_X_SIZE - TILE_BOUND_SIZE))//bottom line
+                    else if(motion_x < SCREEN_X_SIZE && case_y > TILE_Y_SIZE - TILE_BOUND_SIZE && (case_x >= TILE_BOUND_SIZE && case_x < TILE_X_SIZE - TILE_BOUND_SIZE))//bottom line
                     {
-                        current_line_x = event.motion.x / TILE_X_SIZE;
-                        current_line_y = (event.motion.y / TILE_Y_SIZE) + 1;
+                        current_line_x = motion_x;
+                        current_line_y = motion_y + 1;
                         current_column_x = -1;
                         current_column_y = -1;
                     }
-                    else if(case_y < TILE_Y_SIZE && (case_x >= TILE_BOUND_SIZE && case_x < TILE_X_SIZE - TILE_BOUND_SIZE))//top line
+                    else if(motion_x < SCREEN_X_SIZE && case_y < TILE_BOUND_SIZE && (case_x >= TILE_BOUND_SIZE && case_x < TILE_X_SIZE - TILE_BOUND_SIZE))//top line
                     {
-                        current_line_x = event.motion.x / TILE_X_SIZE;
-                        current_line_y = event.motion.y / TILE_Y_SIZE;
+                        current_line_x = motion_x;
+                        current_line_y = motion_y;
+                        current_column_x = -1;
+                        current_column_y = -1;
+                    }
+                    else
+                    {
+                        current_line_x = -1;
+                        current_line_y = -1;
                         current_column_x = -1;
                         current_column_y = -1;
                     }
