@@ -18,7 +18,7 @@ static unsigned int columns[SCREEN_X_SIZE+1][SCREEN_Y_SIZE];
 
 static SDL_Renderer *renderer;
 static unsigned int current_player = 1;
-static unsigned int max_players = 2;
+static unsigned int max_players = 3;
 static int current_line_x = -1, current_line_y = -1, current_column_x = -1, current_column_y = -1;
 
 struct player
@@ -31,10 +31,11 @@ struct player
     int bc;
 };
 
-struct player players[3];
+struct player *players;
 
 void init_players(void)
 {
+    players = malloc(sizeof(struct player) * (max_players + 1));
     players[0].rc = 235;
     players[0].gc = 235;
     players[0].bc = 235;
@@ -53,6 +54,12 @@ void init_players(void)
     players[2].r = 0;
     players[2].g = 0;
     players[2].b = 100;
+    players[3].rc = 200;
+    players[3].gc = 100;
+    players[3].bc = 200;
+    players[3].r = 100;
+    players[3].g = 0;
+    players[3].b = 100;
 }
 
 unsigned int check_case(unsigned int x, unsigned int y)
